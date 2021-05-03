@@ -21,14 +21,17 @@ def Google(search, userAgent):
 
     return(results)
 
-def Duckduckgo(search , userAgent, nbPages):
-    baseURL = ('https://duckduckgo.com/html/?q=' + search+'&p=0')
+
+def Duckduckgo(search , userAgent, targetNbResults):
+    baseURL = ('https://duckduckgo.com/html/?q=' + search)
     headers = {'user-agent' : userAgent}
 #    request = requests.get(URL, headers=headers)
-
+    currentNbResults=0
+    loop=0
     results = []
-    for i in range(0,nbPages):
-        url=f"{baseURL}&p={i}"
+
+    while currentNbResults < targetNbResults:
+        url=f"{baseURL}&p={loop}"
         print(f"URL applée : {url}")
         request = requests.get(url, headers=headers)
         if request.status_code == 200:
@@ -40,30 +43,38 @@ def Duckduckgo(search , userAgent, nbPages):
         else:
             print('HTTP Response Status For Duckduckgo : {}'.format(httpResponseStatusCodes.get(request.status_code)))
             results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-
-
+        currentNbResults=len(results)    
+        loop=loop+1
     print(results)
     print("nb resultats :" + str(len(results)))
-    return(results)
 
-def Givewater(search, userAgent):
-    URL = ('https://search.givewater.com/serp?q='+search)
+    return(results[0:targetNbResults])
+
+def Givewater(search, userAgent, targetNbResults):
+    baseUrl = ('https://search.givewater.com/serp?q='+search)
     headers = {'user-agent' : userAgent}
-    request = requests.get(URL, headers=headers)
-
+    currentNbResults=0
+    loop=0
     results = []
-    if request.status_code == 200:
-        soup = BeautifulSoup(request.content, 'html.parser')
+    while currentNbResults < targetNbResults:
+        url=f"{baseUrl}&page={loop}"
+        print(f"URL applée : {url}")
+        request = requests.get(url, headers=headers)
+        if request.status_code == 200:
+            soup = BeautifulSoup(request.content, 'html.parser')
 
-        for i in soup.find_all('div', {'class' : 'web-bing__result'}):
-            link = i.find_all('a')
-            links = link[0]['href']
-            results.append(links)
-    else:
-        print('HTTP Response Status For Givewater : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-
-    return(results)
+            for i in soup.find_all('div', {'class' : 'web-bing__result'}):
+                link = i.find_all('a')
+                links = link[0]['href']
+                results.append(links)
+        else:
+            print('HTTP Response Status For Givewater : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+        loop=loop+1
+        currentNbResults=len(results)    
+    print(results)
+    print("nb resultats :" + str(len(results)))
+    return(results[0:targetNbResults])
 
 def Ecosia(search, userAgent):
     URL = ('https://www.ecosia.org/search?q='+search)
