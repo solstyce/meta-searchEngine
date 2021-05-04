@@ -1,5 +1,5 @@
 import requests
-
+from urllib.parse import unquote, urlencode, urljoin, urlparse, quote
 from bs4 import BeautifulSoup
 
 
@@ -68,8 +68,41 @@ httpResponseStatusCodes = {
     511 : 'Network Authentication Required'
 }
 
+
+def Google(search, userAgent,targetNbResults):
+    # Pagination KO à revoir
+    baseURL = ('https://google.com/search?q=' + quote(search))
+    headers = {'user-agent' : userAgent}
+
+    currentNbResults=0
+    loop=1
+    results = []
+    while currentNbResults < targetNbResults:
+        url=f"{baseURL}&start={loop}"
+        print(f"URL applée : {url}")
+        request = requests.get(url, headers=headers)
+        if request.status_code == 200:
+            soup = BeautifulSoup(request.content, 'html.parser')
+        
+            for i in soup.find_all('div', {'class' : 'yuRUbf'}):
+                link = i.find_all('a')
+                links = link[0]['href']
+                results.append(links)
+        else:
+            print('HTTP Response Status For Google : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+           
+        currentNbResults=len(results)    
+        if loop == 1:
+            loop=10
+        else:
+            loop=loop+10    
+
+
+    return(results)
+
 def Duckduckgo(search , userAgent, targetNbResults):
-    baseURL = ('https://duckduckgo.com/html/?q=' + search)
+    baseURL = ('https://duckduckgo.com/html/?q=' + quote(search))
     headers = {'user-agent' : userAgent}
 #    request = requests.get(URL, headers=headers)
     currentNbResults=0
@@ -97,7 +130,7 @@ def Duckduckgo(search , userAgent, targetNbResults):
     return(results[0:targetNbResults])
 
 def Givewater(search, userAgent, targetNbResults):
-    baseUrl = ('https://search.givewater.com/serp?q='+search)
+    baseUrl = ('https://search.givewater.com/serp?q='+quote(search))
     headers = {'user-agent' : userAgent}
     currentNbResults=0
     loop=0
@@ -124,10 +157,10 @@ def Givewater(search, userAgent, targetNbResults):
 
 
 
-def Ecosia(search, userAgent):
-    URL = ('https://www.ecosia.org/search?p=2&q='+search)
+def Ecosia(search, userAgent, targetNbResults):
+    baseUrl = ('https://www.ecosia.org/search?p=2&q='+quote(search))
     headers = {'user-agent' : userAgent}
-    request = requests.get(URL, headers=headers)
+    request = requests.get(baseUrl, headers=headers)
 
     results = []
     if request.status_code == 200:
@@ -143,41 +176,67 @@ def Ecosia(search, userAgent):
 
     return(results)
 
-def Bing(search, userAgent):
-    URL = ('https://www.bing.com/search?q='+search)
+def Bing(search, userAgent, targetNbResults):
+    baseUrl = ('https://www.bing.com/search?q='+quote(search))
     headers = {'user-agent' : userAgent}
-    request = requests.get(URL, headers=headers)
-
+    currentNbResults=0
+    loop=1
     results = []
-    if request.status_code == 200:
-        soup = BeautifulSoup(request.content, "html.parser")
-
-        for i in soup.find_all('li', {'class' : 'b_algo'}):
-            link = i.find_all('a')
-            links = link[0]['href']
-            results.append(links)
-    else:
-        print('HTTP Response Status For Bing : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-
-    return(results)
-
-def Yahoo(search, userAgent):
-    URL = ('https://search.yahoo.com/search?q=' + search)
-    request = requests.get(URL)
-
-    results = []
-    if request.status_code == 200:
-        soup = BeautifulSoup(request.content, 'html.parser')
     
-        for i in soup.find_all(attrs={"class": "ac-algo fz-l ac-21th lh-24"}):
-            link = i.get('href')
-            results.append(link)
-    else:
-        print('HTTP Response Status For Yahoo : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        
-    return(results)
+    while currentNbResults < targetNbResults:
+        url=f"{baseUrl}&first={loop}"
+        print(f"URL applée : {url}")
+
+        request = requests.get(url, headers=headers)
+        if request.status_code == 200:
+            soup = BeautifulSoup(request.content, "html.parser")
+
+            for i in soup.find_all('li', {'class' : 'b_algo'}):
+                link = i.find_all('a')
+                links = link[0]['href']
+                results.append(links)
+        else:
+            print('HTTP Response Status For Bing : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+        if loop == 1:
+            loop=10
+        else:
+            loop=loop+10    
+        currentNbResults=len(results)
+
+    return(results[0:targetNbResults])
+
+def Yahoo(search, userAgent, targetNbResults):
+    baseURL = ('https://search.yahoo.com/search?q=' + quote(search))
+    #request = requests.get(URL)
+    headers = {'user-agent' : userAgent}
+    currentNbResults=0
+    loop=1
+    results = []
+
+    while currentNbResults < targetNbResults:
+        url=f"{baseURL}&b={loop}"
+        print(f"URL applée : {url}")
+        request = requests.get(url, headers=headers)
+    
+        if request.status_code == 200:
+            soup = BeautifulSoup(request.content, 'html.parser')
+            # ac-algo fz-l ac-21th lh-24
+            for i in soup.find_all(attrs={"class": "ac-algo fz-l ac-21th lh-24"}):
+                link = i.get('href')
+                ru = link.find('RU=')
+                rk = link.find('RK=')
+                processedLink=link[ru+3:rk-1]
+                processedLink=unquote(processedLink)
+                results.append(processedLink)
+        else:
+            print('HTTP Response Status For Yahoo : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+        loop=loop+10
+        currentNbResults=len(results)    
+    print(results)
+    print("nb resultats :" + str(len(results)))
+    return(results[0:targetNbResults])
 
 
 #test = Duckduckgo("mélanchonest un naze","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75",100)
@@ -186,5 +245,17 @@ def Yahoo(search, userAgent):
 
 #test = Givewater("mélanchon est un naze","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75",100)
 #print(f"NB GIVEWATER : {len(test)}")
-test = Ecosia("mélanchon est un naze","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75")
-print(f"NB GIVEWATER : {len(test)}")
+#test = Ecosia("mélanchon est un naze","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75",15)
+#print(f"NB GIVEWATER : {len(test)}")
+
+
+#test = Bing("mélanchon est un naze","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75",100)
+#print(f"NB Bing : {len(test)}")
+
+#test = Yahoo("mélanchon est un naze","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75",100)
+#print(f"NB Yahoo : {len(test)}")
+
+test = Google("mélanchon est un naze","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75",100)
+print(f"NB Google : {len(test)}")
+
+print(test)
