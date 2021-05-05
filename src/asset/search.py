@@ -1,6 +1,8 @@
 
 import asset.metasearch
 import json
+import pymongo
+import os
 
 class multipleSearch:
     def __init__(self):
@@ -14,6 +16,30 @@ class multipleSearch:
         self.organizedResults={} # link list organized by search engine without any modification
         self.classedbyLink=[] #link list with search engin indexes
         self.userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75"
+        self.config={}
+       # self.mongoClient
+        #self.mongoDb
+        self.loadConfig()
+        self.connect_Db()
+
+    def loadConfig(self):
+        print("Loading configuration")
+        fileDir = os.path.dirname(os.path.realpath('__file__'))
+        configFile = os.path.join(fileDir, 'cfg/mt-search.cfg')
+        file=open(configFile,"r")
+        lines=file.readlines()
+        file.close()
+        for line in lines:
+            print(line)
+            splittedLine=line.rstrip().split('=')
+            print(splittedLine)
+            self.config[splittedLine[0]]=splittedLine[1]
+        #print(self.config)    
+    def connect_Db(self):
+        self.mongoClient = pymongo.MongoClient(f"mongodb://{self.config['db_user']}:{self.config['db_password']}@{self.config['db_host']}:{self.config['dp_port']}/")
+        self.mongoDb = self.mongoClient[self.config['db_database']]
+
+#myCollection = mydb["research"]
     def googleSearch(self,content,nb):
         self.googleLink = asset.metasearch.Google(content, self.userAgent,nb)    
     def duckSearch(self,content,nb):
