@@ -1,16 +1,6 @@
-#from ScrapeSearchEngine.SearchEngine import Google
-#from ScrapeSearchEngine.SearchEngine import Duckduckgo
-#from ScrapeSearchEngine.SearchEngine import Givewater
-#from ScrapeSearchEngine.SearchEngine import Ecosia
-#from ScrapeSearchEngine.SearchEngine import Bing
-#from ScrapeSearchEngine.SearchEngine import Yahoo
 
 import asset.metasearch
 import json
-#from googlesearch import search
-#import ddg3
-#from duckduckpy import query
-
 
 class multipleSearch:
     def __init__(self):
@@ -22,7 +12,7 @@ class multipleSearch:
         self.bingLink=[]
         self.yahooLink=[]
         self.organizedResults={} # link list organized by search engine without any modification
-        self.classedbyLink=[]
+        self.classedbyLink=[] #link list with search engin indexes
         self.userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75"
     def googleSearch(self,content,nb):
         self.googleLink = asset.metasearch.Google(content, self.userAgent,nb)    
@@ -61,6 +51,11 @@ class multipleSearch:
         print("Yahoo :")
         print(self.yahooLink)
 
+    def displayorganizedResults(self):
+        print("Raw Results")
+        print(self.organizedResults) # link list organized by search engine without any modification
+        print("Links organized")
+        print(self.classedbyLink) #link list with search engin indexes
     def SearchAll(self,content,nb):
         self.googleSearch(content,nb)
         self.duckSearch(content,nb)
@@ -86,9 +81,9 @@ class multipleSearch:
         #print(json.dumps(self.organizedResults))
         #2 : merge lists
         tmp_list = self.googleLink+self.duckLink+self.giveWaterLink+self.ecosiaLink+self.bingLink+self.yahooLink
-        print(f"nb tmp : {len(tmp_list)}")
+        #print(f"nb tmp : {len(tmp_list)}")
         tmp_list=set(tmp_list)
-        print(f"nb tmp : {len(tmp_list)}")
+        #print(f"nb tmp : {len(tmp_list)}")
         tmp_list=list(tmp_list)
         for i in tmp_list:
             print(f"link : {i}")
@@ -100,36 +95,35 @@ class multipleSearch:
             if i in self.googleLink:
                 googleIndex=self.googleLink.index(i)
                 result['search'].append({'google':googleIndex})
-                print(f" google index : {googleIndex}")
+                #print(f" google index : {googleIndex}")
 
             if i in self.duckLink:
                 duckIndex=self.duckLink.index(i)
                 result['search'].append({'duckduckgo':duckIndex})
-                print(f" duck duck go index : {duckIndex}")
+                #print(f" duck duck go index : {duckIndex}")
 
             if i in self.giveWaterLink:
                 giveWaterIndex=self.giveWaterLink.index(i)
                 result['search'].append({'givewater':giveWaterIndex}) 
-                print(f" givewater index : {giveWaterIndex}")
+                #print(f" givewater index : {giveWaterIndex}")
 
             if i in self.ecosiaLink:
                 ecosiaIndex=self.ecosiaLink.index(i)
                 result['search'].append({'ecosia':ecosiaIndex})    
-                print(f" ecosia index : {ecosiaIndex}")   
+                #print(f" ecosia index : {ecosiaIndex}")   
             
             if i in self.bingLink:
                 bingIndex=self.bingLink.index(i)
                 result['search'].append({'bing':bingIndex})
-                print(f" bing index : {bingIndex}")
+                #print(f" bing index : {bingIndex}")
 
             if i in self.yahooLink:
                 yahooIndex=self.yahooLink.index(i)
                 result['search'].append({'yahoo':yahooIndex})
-                print(f" yahoo index : {yahooIndex}")
+                #print(f" yahoo index : {yahooIndex}")
      
             self.classedbyLink.append(result)
-            
-        print(self.classedbyLink)
+
     
        
     
