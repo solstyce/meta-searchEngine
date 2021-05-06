@@ -1,7 +1,22 @@
 import requests
+import logging
 from bs4 import BeautifulSoup
 from urllib.parse import unquote, urlencode, urljoin, urlparse, quote
 
+
+
+def setlogConfig(fileName,logLevel):
+    logging.basicConfig(filename=fileName, encoding='utf-8', level=logLevel)
+    
+
+#logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
+#logging.debug('This message should go to the log file')
+#logging.info('So should this')
+#logging.warning('And this, too')
+#logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
+#
+#
+#
 
 httpResponseStatusCodes = {
     100 : 'Continue',
@@ -72,13 +87,13 @@ def Google(search, userAgent,targetNbResults):
     # Pagination KO à revoir
     baseURL = ('https://google.com/search?q=' + quote(search))
     headers = {'user-agent' : userAgent}
-
+    logging.info(f"start Google Research : {search} - Nb result {targetNbResults}")
     currentNbResults=0
     loop=1
     results = []
     while (currentNbResults < targetNbResults and loop < (targetNbResults + 2)) :
         url=f"{baseURL}&start={loop}"
-        #print(f"URL applée : {url}")
+        logging.info(f"URL appelée : {url}")
         request = requests.get(url, headers=headers)
         if request.status_code == 200:
             soup = BeautifulSoup(request.content, 'html.parser')
@@ -92,6 +107,7 @@ def Google(search, userAgent,targetNbResults):
             results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
            
         currentNbResults=len(results) 
+        logging.info(f"nb Results : {currentNbResults}")
         #print(f"nb : {currentNbResults}")   
         if loop == 1:
             loop=10
@@ -105,14 +121,15 @@ def Google(search, userAgent,targetNbResults):
 def Duckduckgo(search , userAgent, targetNbResults):
     baseURL = ('https://duckduckgo.com/html/?q=' + quote(search))
     headers = {'user-agent' : userAgent}
-#    request = requests.get(URL, headers=headers)
+    logging.info(f"start Duck Duck Go Research : {search} - Nb result {targetNbResults}")
     currentNbResults=0
     loop=0
     results = []
 
     while (currentNbResults < targetNbResults and loop < (targetNbResults/10 + 2)):
         url=f"{baseURL}&p={loop}"
-        #print(f"URL applée : {url}")
+        #print(f"URL appelée : {url}")
+        logging.info(f"URL appelée : {url}")
         request = requests.get(url, headers=headers)
         if request.status_code == 200:
             soup = BeautifulSoup(request.content, 'html.parser')
@@ -127,18 +144,19 @@ def Duckduckgo(search , userAgent, targetNbResults):
         loop=loop+1
     #print(results)
     #print("nb resultats :" + str(len(results)))
-
+    logging.info(f"nb Results : {currentNbResults}")
     return(results[0:targetNbResults])
 
 def Givewater(search, userAgent, targetNbResults):
     baseUrl = ('https://search.givewater.com/serp?q='+quote(search))
     headers = {'user-agent' : userAgent}
+    logging.info(f"start GiveWater Research : {search} - Nb result {targetNbResults}")
     currentNbResults=0
     loop=0
     results = []
     while (currentNbResults < targetNbResults and loop < (targetNbResults/10 + 2)):
         url=f"{baseUrl}&page={loop}"
-        #print(f"URL applée : {url}")
+        logging.info(f"URL appelée : {url}")
         request = requests.get(url, headers=headers)
         if request.status_code == 200:
             soup = BeautifulSoup(request.content, 'html.parser')
@@ -154,6 +172,7 @@ def Givewater(search, userAgent, targetNbResults):
         currentNbResults=len(results)    
     #print(results)
     #print("nb resultats :" + str(len(results)))
+    logging.info(f"nb Results : {currentNbResults}")
     return(results[0:targetNbResults])
 
 
@@ -162,7 +181,7 @@ def Ecosia(search, userAgent, targetNbResults):
     baseUrl = ('https://www.ecosia.org/search?p=2&q='+quote(search))
     headers = {'user-agent' : userAgent}
     request = requests.get(baseUrl, headers=headers)
-
+    logging.info(f"start Ecosia Research : {search} - Nb result {targetNbResults}")
     results = []
     if request.status_code == 200:
         soup = BeautifulSoup(request.content, 'html.parser')
@@ -180,13 +199,14 @@ def Ecosia(search, userAgent, targetNbResults):
 def Bing(search, userAgent, targetNbResults):
     baseUrl = ('https://www.bing.com/search?q='+quote(search))
     headers = {'user-agent' : userAgent}
+    logging.info(f"start Bing Research : {search} - Nb result {targetNbResults}")
     currentNbResults=0
     loop=1
     results = []
     
     while (currentNbResults < targetNbResults and loop < (targetNbResults + 2) ):
         url=f"{baseUrl}&first={loop}"
-        #print(f"URL applée : {url}")
+        logging.info(f"URL appelée : {url}")
 
         request = requests.get(url, headers=headers)
         if request.status_code == 200:
@@ -204,12 +224,12 @@ def Bing(search, userAgent, targetNbResults):
         else:
             loop=loop+10    
         currentNbResults=len(results)
-
+    logging.info(f"nb Results : {currentNbResults}")
     return(results[0:targetNbResults])
 
 def Yahoo(search, userAgent, targetNbResults):
     baseURL = ('https://search.yahoo.com/search?q=' + quote(search))
-    #request = requests.get(URL)
+    logging.info(f"start Yahoo Research : {search} - Nb result {targetNbResults}")
     headers = {'user-agent' : userAgent}
     currentNbResults=0
     loop=1
@@ -217,7 +237,7 @@ def Yahoo(search, userAgent, targetNbResults):
 
     while (currentNbResults < targetNbResults and loop < (targetNbResults + 2)):
         url=f"{baseURL}&b={loop}"
-        #print(f"URL applée : {url}")
+        logging.info(f"URL appelée : {url}")
         request = requests.get(url, headers=headers)
     
         if request.status_code == 200:
@@ -236,4 +256,5 @@ def Yahoo(search, userAgent, targetNbResults):
         currentNbResults=len(results)    
     #print(results)
     #print("nb resultats :" + str(len(results)))
+    logging.info(f"nb Results : {currentNbResults}")
     return(results[0:targetNbResults])
