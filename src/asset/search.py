@@ -3,6 +3,7 @@ import asset.metasearch
 import json
 import pymongo
 import os
+from datetime import datetime
 
 class multipleSearch:
     def __init__(self):
@@ -82,27 +83,38 @@ class multipleSearch:
         print(self.organizedResults) # link list organized by search engine without any modification
         print("Links organized")
         print(self.classedbyLink) #link list with search engin indexes
+
     def SearchAll(self,content,nb):
+        col = self.mongoDb["research"]
+        searchData={}
+        searchData["content"]=content
+        searchData["expectedResultNumber"]=nb
+        searchData["researchdate"]=datetime.now()
+        inserted_id=col.insert(searchData)
+        print(str(inserted_id))
         self.googleSearch(content,nb)
         self.duckSearch(content,nb)
         self.givewaterSearch(content,nb)
         self.ecosiaSearch(content,nb)
         self.bingSearch(content,nb)
         self.yahooSearch(content,nb)
+        return(inserted_id)
        
-    def organize(self):
+    def organize(self, id):
         #Organize all Data in one global object
         #points are : 
         #1 : storing link organized by search engin
         #2 : listing all link with related search engin with index number
 
         #1 : 
+        finalResult={}
         self.organizedResults["google"]=self.googleLink
         self.organizedResults["duckduckgo"]=self.duckLink
         self.organizedResults["givewater"]=self.giveWaterLink
         self.organizedResults["ecosia"]=self.ecosiaLink
         self.organizedResults["bing"]=self.bingLink
         self.organizedResults["yahoo"]=self.yahooLink
+        col = self.mongoDb["researchResults"]
         #print(self.organizedResults)
         #print(json.dumps(self.organizedResults))
         #2 : merge lists
@@ -149,6 +161,12 @@ class multipleSearch:
                 #print(f" yahoo index : {yahooIndex}")
      
             self.classedbyLink.append(result)
+
+        finalResult['searchId']=id
+        finalResult['RawData']=self.organizedResults
+        finalResult['OrganizedLinks']=self.classedbyLink
+
+        col.insert_one(finalResult)    
 
     
        
