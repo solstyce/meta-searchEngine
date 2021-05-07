@@ -3,6 +3,7 @@ import asset.metasearch
 import json
 import pymongo
 import os
+import logging
 from datetime import datetime
 
 class multipleSearch:
@@ -36,6 +37,14 @@ class multipleSearch:
             print(splittedLine)
             self.config[splittedLine[0]]=splittedLine[1]
         #print(self.config)    
+    def setLocalLogConfig(self,fileName,logLevel):
+        logging.basicConfig(filename=fileName, level=logLevel)
+    def setMetasearchLogConfig(self,file,level):
+        self.setLocalLogConfig(file,level)
+        asset.metasearch.setlogConfig(file,level)
+        lvl=str(level)
+        logging.info(f"Start Logging process with file {file} at level : {lvl}")   
+
     def connect_Db(self):
         self.mongoClient = pymongo.MongoClient(f"mongodb://{self.config['db_user']}:{self.config['db_password']}@{self.config['db_host']}:{self.config['dp_port']}/")
         self.mongoDb = self.mongoClient[self.config['db_database']]

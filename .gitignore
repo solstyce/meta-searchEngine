@@ -1,2 +1,9 @@
 
 src/asset/__pycache__/
+base-cfg
+
+src/.vscode/launch.json
+
+src/cfg/mt-search.cfg
+
+src/logs/

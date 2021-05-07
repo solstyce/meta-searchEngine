@@ -6,7 +6,7 @@ from urllib.parse import unquote, urlencode, urljoin, urlparse, quote
 
 
 def setlogConfig(fileName,logLevel):
-    logging.basicConfig(filename=fileName, encoding='utf-8', level=logLevel)
+    logging.basicConfig(filename=fileName, level=logLevel)
     
 
 #logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
