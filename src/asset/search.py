@@ -1,14 +1,14 @@
-
 import asset.metasearch
 import json
 import pymongo
 import os
 import logging
+
 from datetime import datetime
 
 class multipleSearch:
     def __init__(self):
-        print("beginning")
+        logging.debug("Init object multipleSearch")
         self.googleLink=[]
         self.duckLink=[]
         self.giveWaterLink=[]
@@ -108,7 +108,8 @@ class multipleSearch:
         self.bingSearch(content,nb)
         self.yahooSearch(content,nb)
         return(inserted_id)
-       
+
+
     def organize(self, id):
         #Organize all Data in one global object
         #points are : 
@@ -136,8 +137,14 @@ class multipleSearch:
             print(f"link : {i}")
             #search link in Google List
             #self.googleLink
+            tmpData = asset.metasearch.getMetaDatasFromLink(i)
+            tmpTitles = asset.metasearch.getTitlesFromLink(i)
+            logging.debug(f"metadata from link :{i}")
+            logging.debug(tmpData)
             result = {}
             result['link']=i
+            result['metadata']=tmpData
+            result['titles']=tmpTitles
             result['search']=[]
             if i in self.googleLink:
                 googleIndex=self.googleLink.index(i)
