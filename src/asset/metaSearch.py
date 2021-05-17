@@ -96,36 +96,36 @@ def getTitlesFromLink(link):
             tmpTitle={}
             tmpTitle['type']="title"
             tmpTitle['content']=title.get_text()
-            print("title found :")
-            print(title.get_text())
+            #print("title found :")
+            #print(title.get_text())
             logging.debug("title found :")
             logging.debug(title.get_text())
-            print(title.get_text())
+            #print(title.get_text())
             titles.append(tmpTitle)
 
         for h1 in soup.find_all('h1'):
             tmpTitle={}
             tmpTitle['type']="h1"
             tmpTitle['content']=h1.get_text()
-            print("title found :")
-            print(h1.get_text())
+            #print("title found :")
+            #print(h1.get_text())
             logging.debug("h1 found :")
             logging.debug(h1.get_text())
-            print(h1.get_text())
+            #print(h1.get_text())
             titles.append(tmpTitle)
         for h2 in soup.find_all('h2'):
             tmpTitle={}
             tmpTitle['type']="h2"
             tmpTitle['content']=h2.get_text()
-            print("title found :")
-            print(h2.get_text())
+            #print("title found :")
+            #print(h2.get_text())
             logging.debug("h2 found :")
             logging.debug(h2.get_text())
-            print(h2.get_text())
+            #print(h2.get_text())
             titles.append(tmpTitle)    
     except:
-        logging.debug(f"error occured with link {link} : ")
-        titles.append(f"error in link : {link}")    
+        logging.error(f"error occured with link {link} : ")
+        titles.error(f"error in link : {link}")    
     return titles    
 
 def getMetaDatasFromLink(link):
@@ -144,12 +144,12 @@ def getMetaDatasFromLink(link):
                 tmpkeyData['content']=tag.attrs['content'].lower()
                 logging.debug("Tmp Key Data = ")
                 logging.debug(tmpkeyData)
-                print("Tmp Key Data = ")
-                print(tmpkeyData)
+                #print("Tmp Key Data = ")
+                #print(tmpkeyData)
                 metaData.append(tmpkeyData)
     except: 
-        logging.debug(f"error occured with link {link} : ")
-        metaData.append(f"error in link : {link}")
+        logging.error(f"error occured with link {link} : ")
+        metaData.error(f"error in link : {link}")
 
     return metaData
             #print 'NAME    :',tag.attrs['name'].lower()
