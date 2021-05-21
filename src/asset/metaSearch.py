@@ -125,12 +125,13 @@ def getTitlesFromLink(link):
             titles.append(tmpTitle)    
     except:
         logging.error(f"error occured with link {link} : ")
-        titles.error(f"error in link : {link}")    
     return titles    
 
 def getMetaDatasFromLink(link):
     #first Get Metadata
     metaData=[]
+    print(f"link : =====>")
+    print(link)
     try:  
         response = requests.get(link)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -149,7 +150,6 @@ def getMetaDatasFromLink(link):
                 metaData.append(tmpkeyData)
     except: 
         logging.error(f"error occured with link {link} : ")
-        metaData.error(f"error in link : {link}")
 
     return metaData
             #print 'NAME    :',tag.attrs['name'].lower()

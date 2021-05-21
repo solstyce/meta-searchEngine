@@ -15,7 +15,7 @@ class multipleSearch:
         self.ecosiaLink=[]
         self.bingLink=[]
         self.yahooLink=[]
-        self.organizedResults={} # link list organized by search engine without any modification
+        self.organizedResults=[] # link list organized by search engine without any modification
         self.classedbyLink=[] #link list with search engin indexes
         self.userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75"
         self.config={}
@@ -118,12 +118,42 @@ class multipleSearch:
 
         #1 : 
         finalResult={}
-        self.organizedResults["google"]=self.googleLink
-        self.organizedResults["duckduckgo"]=self.duckLink
-        self.organizedResults["givewater"]=self.giveWaterLink
-        self.organizedResults["ecosia"]=self.ecosiaLink
-        self.organizedResults["bing"]=self.bingLink
-        self.organizedResults["yahoo"]=self.yahooLink
+        tmp={}
+        tmp['engine']="google"
+        tmp['links']=self.googleLink
+        self.organizedResults.append(tmp)
+
+        tmp={}
+        tmp['engine']="duckduckgo"
+        tmp['links']=self.duckLink
+        self.organizedResults.append(tmp)
+
+        tmp={}
+        tmp['engine']="givewater"
+        tmp['links']=self.giveWaterLink
+        self.organizedResults.append(tmp)
+
+        tmp={}
+        tmp['engine']="ecosia"
+        tmp['links']=self.ecosiaLink
+        self.organizedResults.append(tmp)
+
+        tmp={}
+        tmp['engine']="bing"
+        tmp['links']=self.bingLink
+        self.organizedResults.append(tmp)
+
+        tmp={}
+        tmp['engine']="yahoo"
+        tmp['links']=self.yahooLink
+        self.organizedResults.append(tmp)
+
+        #self.organizedResults["google"]=self.googleLink
+        #self.organizedResults["duckduckgo"]=self.duckLink
+        #self.organizedResults["givewater"]=self.giveWaterLink
+        #self.organizedResults["ecosia"]=self.ecosiaLink
+        #self.organizedResults["bing"]=self.bingLink
+        #self.organizedResults["yahoo"]=self.yahooLink
         col = self.mongoDb["researchResults"]
         #print(self.organizedResults)
         #print(json.dumps(self.organizedResults))
