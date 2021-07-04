@@ -103,7 +103,7 @@ class multipleSearch:
         print(str(inserted_id))
         self.googleSearch(content,nb)
         self.duckSearch(content,nb)
-        self.givewaterSearch(content,nb)
+        #self.givewaterSearch(content,nb)
         self.ecosiaSearch(content,nb)
         self.bingSearch(content,nb)
         self.yahooSearch(content,nb)

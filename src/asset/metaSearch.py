@@ -1,5 +1,6 @@
 import requests
 import logging
+import time
 from bs4 import BeautifulSoup
 from urllib.parse import unquote, urlencode, urljoin, urlparse, quote
 
@@ -132,6 +133,8 @@ def getMetaDatasFromLink(link):
     metaData=[]
     print(f"link : =====>")
     print(link)
+    logging.info(f"getting metadata from {link} : ")
+    print(f"getting metadata from {link} : ")
     try:  
         response = requests.get(link)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -143,13 +146,12 @@ def getMetaDatasFromLink(link):
                 tmpkeyData={}
                 tmpkeyData['name']=tag.attrs['name'].lower()
                 tmpkeyData['content']=tag.attrs['content'].lower()
-                logging.debug("Tmp Key Data = ")
-                logging.debug(tmpkeyData)
-                #print("Tmp Key Data = ")
-                #print(tmpkeyData)
+                logging.debug(f"Tmp Key Data = {tmpkeyData}")
+                print(f"Tmp Key Data = {tmpkeyData}")
                 metaData.append(tmpkeyData)
     except: 
         logging.error(f"error occured with link {link} : ")
+        print(f"error occured with link {link} : ")
 
     return metaData
             #print 'NAME    :',tag.attrs['name'].lower()
@@ -214,6 +216,9 @@ def Duckduckgo(search , userAgent, targetNbResults):
             results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
         currentNbResults=len(results)    
         loop=loop+1
+        #sleep pour éviter les erreurs "forbidden"
+        time.sleep(3)
+
     #print(results)
     #print("nb resultats :" + str(len(results)))
     logging.info(f"nb Results : {currentNbResults}")
