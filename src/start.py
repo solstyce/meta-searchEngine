@@ -18,8 +18,8 @@ with open("basefile/search.csv",'r', encoding='utf8') as f:
         id=m.SearchAll(line,50)
         m.organize(id)
         #sleep pour éviter de se faire jeter par duck duck go pour spam ^_^
-       # print("start sleeping for 60s")
-       # time.sleep(60)
+        print("start sleeping for 60s")
+        time.sleep(10)
        # print("continue sleeping for 60s")
        # time.sleep(60)
        # print("continue sleeping for 60s")

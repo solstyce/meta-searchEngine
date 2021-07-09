@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import unquote, urlencode, urljoin, urlparse, quote
 
 
+sleeptime = 5
+# temps d'attente entre 2 requêtes sur moteur de recherche
 
 def setlogConfig(fileName,logLevel):
     logging.basicConfig(filename=fileName, level=logLevel)
@@ -165,29 +167,33 @@ def Google(search, userAgent,targetNbResults):
     currentNbResults=0
     loop=1
     results = []
-    while (currentNbResults < targetNbResults and loop < (targetNbResults + 2)) :
-        url=f"{baseURL}&start={loop}"
-        logging.info(f"URL appelée : {url}")
-        request = requests.get(url, headers=headers)
-        if request.status_code == 200:
-            soup = BeautifulSoup(request.content, 'html.parser')
-        
-            for i in soup.find_all('div', {'class' : 'yuRUbf'}):
-                link = i.find_all('a')
-                links = link[0]['href']
-                results.append(links)
-        else:
-            print('HTTP Response Status For Google : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-           
-        currentNbResults=len(results) 
-        logging.info(f"nb Results : {currentNbResults}")
-        #print(f"nb : {currentNbResults}")   
-        if loop == 1:
-            loop=10
-        else:
-            loop=loop+10    
+    try:
+        while (currentNbResults < targetNbResults and loop < (targetNbResults + 2)) :
 
+            url=f"{baseURL}&start={loop}"
+            logging.info(f"URL appelée : {url}")
+            request = requests.get(url, headers=headers)
+            if request.status_code == 200:
+                soup = BeautifulSoup(request.content, 'html.parser')
+                for i in soup.find_all('div', {'class' : 'yuRUbf'}):
+                    link = i.find_all('a')
+                    links = link[0]['href']
+                    results.append(links)
+            else:
+                print('HTTP Response Status For Google : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+                results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+                
+            currentNbResults=len(results) 
+            logging.info(f"nb Results : {currentNbResults}")
+            #print(f"nb : {currentNbResults}")   
+            if loop == 1:
+                loop=10
+            else:
+                loop=loop+10    
+            time.sleep(sleeptime)
+    except: 
+        logging.error(f"error occured with Google {search} : ")
+        print(f"error occured with Google {search} : ")
 
     return(results)
 
@@ -200,25 +206,28 @@ def Duckduckgo(search , userAgent, targetNbResults):
     loop=0
     results = []
 
-    while (currentNbResults < targetNbResults and loop < (targetNbResults/10 + 2)):
-        url=f"{baseURL}&p={loop}"
-        #print(f"URL appelée : {url}")
-        logging.info(f"URL appelée : {url}")
-        request = requests.get(url, headers=headers)
-        if request.status_code == 200:
-            soup = BeautifulSoup(request.content, 'html.parser')
+    try:
+        while (currentNbResults < targetNbResults and loop < (targetNbResults/10 + 2)):
+            url=f"{baseURL}&p={loop}"
+            #print(f"URL appelée : {url}")
+            logging.info(f"URL appelée : {url}")
+            request = requests.get(url, headers=headers)
+            if request.status_code == 200:
+                soup = BeautifulSoup(request.content, 'html.parser')
 
-            for i in soup.find_all('a', attrs={'class':'result__a'}):
-                links = i['href']
-                results.append(links)
-        else:
-            print('HTTP Response Status For Duckduckgo : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        currentNbResults=len(results)    
-        loop=loop+1
-        #sleep pour éviter les erreurs "forbidden"
-        time.sleep(3)
-
+                for i in soup.find_all('a', attrs={'class':'result__a'}):
+                    links = i['href']
+                    results.append(links)
+            else:
+                print('HTTP Response Status For Duckduckgo : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+                results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            currentNbResults=len(results)    
+            loop=loop+1
+            #sleep pour éviter les erreurs "forbidden"
+            time.sleep(sleeptime)
+    except: 
+        logging.error(f"error occured with DuckDuckgo {search} : ")
+        print(f"error occured with DuckDuckgo {search} : ")
     #print(results)
     #print("nb resultats :" + str(len(results)))
     logging.info(f"nb Results : {currentNbResults}")
@@ -231,22 +240,27 @@ def Givewater(search, userAgent, targetNbResults):
     currentNbResults=0
     loop=0
     results = []
-    while (currentNbResults < targetNbResults and loop < (targetNbResults/10 + 2)):
-        url=f"{baseUrl}&page={loop}"
-        logging.info(f"URL appelée : {url}")
-        request = requests.get(url, headers=headers)
-        if request.status_code == 200:
-            soup = BeautifulSoup(request.content, 'html.parser')
+    try:
+        while (currentNbResults < targetNbResults and loop < (targetNbResults/10 + 2)):
+            url=f"{baseUrl}&page={loop}"
+            logging.info(f"URL appelée : {url}")
+            request = requests.get(url, headers=headers)
+            if request.status_code == 200:
+                soup = BeautifulSoup(request.content, 'html.parser')
 
-            for i in soup.find_all('div', {'class' : 'web-bing__result'}):
-                link = i.find_all('a')
-                links = link[0]['href']
-                results.append(links)
-        else:
-            print('HTTP Response Status For Givewater : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        loop=loop+1
-        currentNbResults=len(results)    
+                for i in soup.find_all('div', {'class' : 'web-bing__result'}):
+                    link = i.find_all('a')
+                    links = link[0]['href']
+                    results.append(links)
+            else:
+                print('HTTP Response Status For Givewater : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+                results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            loop=loop+1
+            currentNbResults=len(results)    
+            time.sleep(sleeptime)
+    except: 
+        logging.error(f"error occured with givewater {search} : ")
+        print(f"error occured with givewater {search} : ")            
     #print(results)
     #print("nb resultats :" + str(len(results)))
     logging.info(f"nb Results : {currentNbResults}")
@@ -280,27 +294,31 @@ def Bing(search, userAgent, targetNbResults):
     currentNbResults=0
     loop=1
     results = []
-    
-    while (currentNbResults < targetNbResults and loop < (targetNbResults + 2) ):
-        url=f"{baseUrl}&first={loop}"
-        logging.info(f"URL appelée : {url}")
+    try:
+        while (currentNbResults < targetNbResults and loop < (targetNbResults + 2) ):
+            url=f"{baseUrl}&first={loop}"
+            logging.info(f"URL appelée : {url}")
 
-        request = requests.get(url, headers=headers)
-        if request.status_code == 200:
-            soup = BeautifulSoup(request.content, "html.parser")
+            request = requests.get(url, headers=headers)
+            if request.status_code == 200:
+                soup = BeautifulSoup(request.content, "html.parser")
 
-            for i in soup.find_all('li', {'class' : 'b_algo'}):
-                link = i.find_all('a')
-                links = link[0]['href']
-                results.append(links)
-        else:
-            print('HTTP Response Status For Bing : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        if loop == 1:
-            loop=10
-        else:
-            loop=loop+10    
-        currentNbResults=len(results)
+                for i in soup.find_all('li', {'class' : 'b_algo'}):
+                    link = i.find_all('a')
+                    links = link[0]['href']
+                    results.append(links)
+            else:
+                print('HTTP Response Status For Bing : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+                results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            if loop == 1:
+                loop=10
+            else:
+                loop=loop+10    
+            currentNbResults=len(results)
+            time.sleep(sleeptime)
+    except: 
+        logging.error(f"error occured with Bing {search} : ")
+        print(f"error occured with Bing {search} : ")          
     logging.info(f"nb Results : {currentNbResults}")
     return(results[0:targetNbResults])
 
@@ -311,26 +329,30 @@ def Yahoo(search, userAgent, targetNbResults):
     currentNbResults=0
     loop=1
     results = []
-
-    while (currentNbResults < targetNbResults and loop < (targetNbResults + 2)):
-        url=f"{baseURL}&b={loop}"
-        logging.info(f"URL appelée : {url}")
-        request = requests.get(url, headers=headers)
-    
-        if request.status_code == 200:
-            soup = BeautifulSoup(request.content, 'html.parser')
-            for i in soup.find_all(attrs={"class": "ac-algo fz-l ac-21th lh-24"}):
-                link = i.get('href')
-                ru = link.find('RU=')
-                rk = link.find('RK=')
-                processedLink=link[ru+3:rk-1]
-                processedLink=unquote(processedLink)
-                results.append(processedLink)
-        else:
-            print('HTTP Response Status For Yahoo : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-            results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
-        loop=loop+10
-        currentNbResults=len(results)    
+    try:
+        while (currentNbResults < targetNbResults and loop < (targetNbResults + 2)):
+            url=f"{baseURL}&b={loop}"
+            logging.info(f"URL appelée : {url}")
+            request = requests.get(url, headers=headers)
+        
+            if request.status_code == 200:
+                soup = BeautifulSoup(request.content, 'html.parser')
+                for i in soup.find_all(attrs={"class": "ac-algo fz-l ac-21th lh-24"}):
+                    link = i.get('href')
+                    ru = link.find('RU=')
+                    rk = link.find('RK=')
+                    processedLink=link[ru+3:rk-1]
+                    processedLink=unquote(processedLink)
+                    results.append(processedLink)
+            else:
+                print('HTTP Response Status For Yahoo : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+                results.append('HTTP Status : {}'.format(httpResponseStatusCodes.get(request.status_code)))
+            loop=loop+10
+            currentNbResults=len(results) 
+            time.sleep(sleeptime)
+    except: 
+        logging.error(f"error occured with Yahoo {search} : ")
+        print(f"error occured with Yahoo {search} : ")             
     #print(results)
     #print("nb resultats :" + str(len(results)))
     logging.info(f"nb Results : {currentNbResults}")
