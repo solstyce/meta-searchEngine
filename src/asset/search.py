@@ -49,6 +49,15 @@ class multipleSearch:
         self.mongoClient = pymongo.MongoClient(f"mongodb://{self.config['db_user']}:{self.config['db_password']}@{self.config['db_host']}:{self.config['dp_port']}/")
         self.mongoDb = self.mongoClient[self.config['db_database']]
 
+    def connect_vpn(self):
+        logging.info("connect VPN")  
+        os.system(self.config['vpn_connect'])
+
+    def disconnect_vpn(self):
+        logging.info("disconnect VPN") 
+        os.system(self.config['vpn_disconnect']) 
+
+
 #myCollection = mydb["research"]
     def googleSearch(self,content,nb):
         self.googleLink = asset.metasearch.Google(content, self.userAgent,nb)    
