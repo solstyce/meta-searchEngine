@@ -22,7 +22,6 @@ logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
 with open("basefile/search.csv",'r', encoding='utf8') as f:
     for line in f.readlines():
         m = multipleSearch()
-        #m.setMetasearchLogConfig('testprout.log',10)
         m.log(f"debut recherche {line}")
         m.connect_vpn()
         print(f"searchAll : {line}")
@@ -30,7 +29,6 @@ with open("basefile/search.csv",'r', encoding='utf8') as f:
         id=m.SearchAll(line,20)
         m.organize(id)
         m.disconnect_Db()
-        #sleep pour éviter de se faire jeter par duck duck go pour spam ^_^
         print("start sleeping for 10s")
         time.sleep(10)
         m.disconnect_vpn()
