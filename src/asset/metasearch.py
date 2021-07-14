@@ -92,8 +92,9 @@ def getTitlesFromLink(link):
     logging.debug(f"start searching title data for link : {link}")
     print(f"start searching title data for link : {link}")
     try:
+        logging.debug(f"Start requestfor : {link}")
         response = requests.get(link)
-        logging.debug(str(response))
+        logging.debug(f"request response : {response}")
         soup = BeautifulSoup(response.text, 'html.parser')
         #metas = soup.find_all('h1')
         for title in soup.find_all('title'):
@@ -139,8 +140,9 @@ def getMetaDatasFromLink(link):
     logging.info(f"getting metadata from {link} : ")
     print(f"getting metadata from {link} : ")
     try:  
+        logging.debug(f"Start requestfor : {link}")
         response = requests.get(link)
-        logging.debug(str(response))
+        logging.debug(f"request response : {response}")
         soup = BeautifulSoup(response.text, 'html.parser')
         metas = soup.find_all('meta')
         #print [ meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description' ]
