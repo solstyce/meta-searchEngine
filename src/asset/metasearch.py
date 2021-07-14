@@ -9,7 +9,7 @@ sleeptime = 5
 # temps d'attente entre 2 requêtes sur moteur de recherche
 
 def setlogConfig(fileName,logLevel):
-    logging.basicConfig(filename=fileName, level=logLevel)
+    logging.basicConfig(filename=fileName, encoding='utf-8', level=logLevel)
     
 
 #logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)

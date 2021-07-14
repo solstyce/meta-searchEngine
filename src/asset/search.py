@@ -3,7 +3,8 @@ import json
 import pymongo
 import os
 import logging
-
+from random_user_agent.user_agent import UserAgent
+from random_user_agent.params import SoftwareName, OperatingSystem
 from datetime import datetime
 
 class multipleSearch:
@@ -38,12 +39,36 @@ class multipleSearch:
             self.config[splittedLine[0]]=splittedLine[1]
         #print(self.config)    
     def setLocalLogConfig(self,fileName,logLevel):
-        logging.basicConfig(filename=fileName, level=logLevel)
+        #obsolète do not use
+        #To delete
+        print("init log local config")
+        logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
+        datefmt='%d-%m-%Y:%H:%M:%S',
+        level=logLevel,
+        filename=fileName)
+        logging.debug("local Config Init OK !")
+        #for handler in logging.root.handlers[:]:
+        #    logging.root.removeHandler(handler)
+
+        #logging.basicConfig(filename=fileName, format='%(asctime)s [%(levelname)s] - %(message)s', encoding='utf-8', level=logLevel)
+
     def setMetasearchLogConfig(self,file,level):
+        #obsolète do not use
+        #To delete
+        print("meta log init")
         self.setLocalLogConfig(file,level)
-        asset.metasearch.setlogConfig(file,level)
+        asset.metasearch.setlogConfig(f"meta-{file}",level)
         lvl=str(level)
         logging.info(f"Start Logging process with file {file} at level : {lvl}")   
+    
+    def log(self,msg):
+        logging.info(f"{msg}")
+    
+    def setRandomUserAgent(self):
+        software_names = [SoftwareName.CHROME.value]
+        operating_systems = [OperatingSystem.WINDOWS.value, OperatingSystem.LINUX.value]
+        user_agent_rotator = UserAgent(software_names=software_names, operating_systems=operating_systems, limit=100)   
+        self.userAgent = user_agent_rotator.get_random_user_agent()
 
     def connect_Db(self):
         self.mongoClient = pymongo.MongoClient(f"mongodb://{self.config['db_user']}:{self.config['db_password']}@{self.config['db_host']}:{self.config['dp_port']}/")
