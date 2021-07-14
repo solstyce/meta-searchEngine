@@ -74,6 +74,9 @@ class multipleSearch:
         self.mongoClient = pymongo.MongoClient(f"mongodb://{self.config['db_user']}:{self.config['db_password']}@{self.config['db_host']}:{self.config['dp_port']}/")
         self.mongoDb = self.mongoClient[self.config['db_database']]
 
+    def disconnect_Db(self):
+        self.mongoClient.close()
+
     def connect_vpn(self):
         logging.info("connect VPN")  
         os.system(self.config['vpn_connect'])
